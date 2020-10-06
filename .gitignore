@@ -217,6 +217,7 @@ _pkginfo.txt
 ClientBin/
 bin/
 obj/
+*.Development.json
 ~$*
 *~
 *.dbmdl
