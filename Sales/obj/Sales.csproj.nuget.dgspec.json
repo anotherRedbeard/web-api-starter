@@ -38,6 +38,20 @@
       },
       "frameworks": {
         "netcoreapp3.1": {
+          "dependencies": {
+            "Microsoft.data.sqlclient": {
+              "target": "Package",
+              "version": "[2.0.1, )"
+            },
+            "dapper": {
+              "target": "Package",
+              "version": "[2.0.35, )"
+            },
+            "microsoft.azure.services.appauthentication": {
+              "target": "Package",
+              "version": "[1.6.0, )"
+            }
+          },
           "imports": [
             "net461",
             "net462",

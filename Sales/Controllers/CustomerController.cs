@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Models;
+using Services;
 
 namespace Controllers
 {
@@ -16,10 +17,18 @@ namespace Controllers
             new Customer {CustomerId=2,FirstName="Tom",LastName="Glavin",Phone="6666666666",Email="tg@aol.com",Street="124 Any Street",City="Atlanta",State="GA",ZipCode="123457"},
         };
 
+        private readonly ICustomerService _customerService;
+
+        public CustomerController(ICustomerService customerService)
+        {
+            _customerService = customerService;
+        }
+
         [HttpGet]
         public async Task<IActionResult> ListAllCustomers()
         {
-            return Ok(customers);
+            var result = await _customerService.GetAll();
+            return Ok(result);
         }
 
         [HttpGet("name/{name}")]
