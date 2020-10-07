@@ -1,0 +1,18 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "serverfarms_consumption_name": {
+            "value": "ar-scus-webapi-asp-dev"
+        },
+        "web_app_name": {
+            "value":"ar-scus-sales-dev"
+        },
+        "app_insights_name": {
+            "value": "ar-scus-webapi-ai-dev"
+        },
+        "enterprise_key_vault_name":{
+            "value": "ar-enterprise-kv-dev" 
+        }
+    }
+}

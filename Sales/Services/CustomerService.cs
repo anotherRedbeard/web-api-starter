@@ -3,19 +3,22 @@ using System.Threading.Tasks;
 using Dapper;
 using Microsoft.Extensions.Configuration;
 using Models;
+using Services.Queries;
 
 namespace Services
 {
     public class CustomerService : DapperService, ICustomerService
     {
-        public CustomerService(IConfiguration configuration) : base(configuration)
+        private readonly ICommandText _commandText;
+        public CustomerService(IConfiguration configuration, ICommandText commandText) : base(configuration)
         {
+            _commandText = commandText;
         }
 
         public async Task<IEnumerable<Customer>> GetAll()
         {
             return await WithConnection(async c => {
-                var result = await c.QueryAsync<Customer>("select * from sales.customers");
+                var result = await c.QueryAsync<Customer>(_commandText.GetCustomers);
                 return result;
             });
         }
@@ -23,7 +26,7 @@ namespace Services
         public async ValueTask<Customer> GetById(int id)
         {
             return await WithConnection(async c => {
-                var result = await c.QueryFirstOrDefaultAsync<Customer>("select * from sales.customer where customerid = @id",new {CustomerId = id});
+                var result = await c.QueryFirstOrDefaultAsync<Customer>(_commandText.GetCustomersById,new {CustomerId = id});
                 return result;
             });
         }

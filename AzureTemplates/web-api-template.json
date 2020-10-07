@@ -1,0 +1,229 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "serverfarms_consumption_name": {
+            "type": "string",
+            "metadata": {
+                "description":"The name of app service consumption plan"
+            }
+        },
+        "web_app_name": {
+            "type":"string",
+            "metadata":{
+                "description":"This name of the web app that will host the api."
+            }
+        },
+        "app_insights_name": {
+            "type":"string",
+            "metadata": {
+                "description":"The name of the function application insights"
+            }
+        },
+        "enterprise_key_vault_name": {
+            "type":"string",
+            "metadata": {
+                "description":"The name of the keyvault that i am using to pull the connection string from"
+            }
+        }
+    },
+    "variables": { },
+    "resources": [
+        {
+            "comments": "App service that will host the web app, by default it is set to a consumption plan.",
+            "type": "Microsoft.Web/serverfarms",
+            "apiVersion": "2016-09-01",
+            "name": "[parameters('serverfarms_consumption_name')]",
+            "location": "[resourceGroup().location]",
+            "sku": {
+                "name": "F1",
+                "tier": "Free",
+                "size": "F1",
+                "family": "F",
+                "capacity": 0
+            },
+            "kind": "functionapp",
+            "properties": {
+                "name": "[parameters('serverfarms_consumption_name')]",
+                "perSiteScaling": false,
+                "reserved": false,
+                "targetWorkerCount": 0,
+                "targetWorkerSizeId": 0
+            }
+        },
+        {
+            "comments": "Web app that will host the web api",
+            "type": "Microsoft.Web/sites",
+            "apiVersion": "2018-11-01",
+            "name": "[parameters('web_app_name')]",
+            "location": "[resourceGroup().location]",
+            "tags": {
+                "[concat('hidden-related:/subscriptions/', subscription().id, '/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Web/serverfarms/', parameters('serverfarms_consumption_name'))]": "empty"
+            },
+            "kind": "app",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/serverfarms', parameters('serverfarms_consumption_name'))]"
+            ],
+            "identity": {
+                "type": "SystemAssigned"
+            },
+            "properties": {
+                "enabled": true,
+                "hostNameSslStates": [
+                    {
+                        "name": "[concat(parameters('web_app_name'), '.azurewebsites.net')]",
+                        "sslState": "Disabled",
+                        "hostType": "Standard"
+                    },
+                    {
+                        "name": "[concat(parameters('web_app_name'), '.scm.azurewebsites.net')]",
+                        "sslState": "Disabled",
+                        "hostType": "Repository"
+                    }
+                ],
+                "serverFarmId": "[concat(subscription().id, '/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Web/serverfarms/', parameters('serverfarms_consumption_name'))]",
+                "siteConfig":{
+                    "appSettings":[
+                        {
+                            "name":"FUNCTIONS_WORKER_RUNTIME",
+                            "value":"dotnet"
+                        },
+                        {
+                            "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+                            "value": "[reference(concat('microsoft.insights/components/', parameters('app_insights_name'))).InstrumentationKey]"
+                        },
+                        {
+                            "name": "WEBSITE_ENABLE_SYNC_UPDATE_SITE",
+                            "value": "true"
+                        },
+                        {
+                            "name": "WEBSITE_RUN_FROM_PACKAGE",
+                            "value": "1"
+                        },
+                        {
+                            "name":"DefaultConnectionString",
+                            "value":"[concat('@Microsoft.KeyVault(SecretUri=https://',parameters('enterprise_key_vault_name'),'.vault.azure.net/secrets/ODSConnectionString)')]"
+                        }
+                    ]
+                },
+                "reserved": false,
+                "isXenon": false,
+                "hyperV": false,
+                "scmSiteAlsoStopped": false,
+                "clientAffinityEnabled": true,
+                "clientCertEnabled": false,
+                "hostNamesDisabled": false,
+                "containerSize": 0,
+                "dailyMemoryTimeQuota": 0,
+                "httpsOnly": true,
+                "redundancyMode": "None"
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/config",
+            "apiVersion": "2018-11-01",
+            "name": "[concat(parameters('web_app_name'), '/web')]",
+            "location": "South Central US",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('web_app_name'))]"
+            ],
+            "tags": {
+            },
+            "properties": {
+                "numberOfWorkers": 1,
+                "defaultDocuments": [
+                    "Default.htm",
+                    "Default.html",
+                    "Default.asp",
+                    "index.htm",
+                    "index.html",
+                    "iisstart.htm",
+                    "default.aspx",
+                    "index.php",
+                    "hostingstart.html"
+                ],
+                "netFrameworkVersion": "v4.0",
+                "requestTracingEnabled": false,
+                "remoteDebuggingEnabled": false,
+                "remoteDebuggingVersion": "VS2019",
+                "httpLoggingEnabled": false,
+                "logsDirectorySizeLimit": 35,
+                "detailedErrorLoggingEnabled": false,
+                "publishingUsername": "$ar-sales",
+                "azureStorageAccounts": {},
+                "scmType": "VSTSRM",
+                "use32BitWorkerProcess": true,
+                "webSocketsEnabled": false,
+                "alwaysOn": false,
+                "managedPipelineMode": "Integrated",
+                "virtualApplications": [
+                    {
+                        "virtualPath": "/",
+                        "physicalPath": "site\\wwwroot",
+                        "preloadEnabled": false
+                    }
+                ],
+                "loadBalancing": "LeastRequests",
+                "experiments": {
+                    "rampUpRules": []
+                },
+                "autoHealEnabled": false,
+                "cors": {
+                    "allowedOrigins": [
+                        "*"
+                    ],
+                    "supportCredentials": false
+                },
+                "localMySqlEnabled": false,
+                "ipSecurityRestrictions": [
+                    {
+                        "ipAddress": "Any",
+                        "action": "Allow",
+                        "priority": 1,
+                        "name": "Allow all",
+                        "description": "Allow all access"
+                    }
+                ],
+                "scmIpSecurityRestrictions": [
+                    {
+                        "ipAddress": "Any",
+                        "action": "Allow",
+                        "priority": 1,
+                        "name": "Allow all",
+                        "description": "Allow all access"
+                    }
+                ],
+                "scmIpSecurityRestrictionsUseMain": false,
+                "http20Enabled": false,
+                "minTlsVersion": "1.2",
+                "ftpsState": "AllAllowed",
+                "reservedInstanceCount": 0
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/hostNameBindings",
+            "apiVersion": "2018-11-01",
+            "name": "[concat(parameters('web_app_name'), '/', parameters('web_app_name'), '.azurewebsites.net')]",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('web_app_name'))]"
+            ],
+            "properties": {
+                "siteName": "[parameters('web_app_name')]",
+                "hostNameType": "Verified"
+            }
+        },
+        {
+            "type": "microsoft.insights/components",
+            "apiVersion": "2015-05-01",
+            "name": "[parameters('app_insights_name')]",
+            "location": "[resourceGroup().location]",
+            "tags": {
+            },
+            "kind": "web",
+            "properties": {
+                "Application_Type":"web"
+            }
+        }
+    ]
+}
