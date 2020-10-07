@@ -99,10 +99,13 @@
                         {
                             "name": "WEBSITE_RUN_FROM_PACKAGE",
                             "value": "1"
-                        },
+                        }
+                    ],
+                    "connectionStrings": [
                         {
-                            "name":"DefaultConnectionString",
-                            "value":"[concat('@Microsoft.KeyVault(SecretUri=https://',parameters('enterprise_key_vault_name'),'.vault.azure.net/secrets/ODSConnectionString)')]"
+                            "name": "DefaultConnection",
+                            "connectionString": "[concat('@Microsoft.KeyVault(SecretUri=https://',parameters('enterprise_key_vault_name'),'.vault.azure.net/secrets/ODSConnectionString)')]",
+                            "type": "SQLAzure"
                         }
                     ]
                 },
