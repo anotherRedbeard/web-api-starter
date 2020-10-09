@@ -2,6 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Models
 {
+#pragma warning disable CS1591
     public class Customer
     {
         public int CustomerId { get; set; }
@@ -14,4 +15,5 @@ namespace Models
         public string State { get; set; }
         public string ZipCode { get; set; }
     }
+#pragma warning disable CS1591
 }

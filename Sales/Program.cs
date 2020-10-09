@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Sales
 {
+#pragma warning disable CS1591
     public class Program
     {
         public static void Main(string[] args)
@@ -23,4 +24,5 @@ namespace Sales
                     webBuilder.UseStartup<Startup>();
                 });
     }
+#pragma warning disable CS1591
 }
