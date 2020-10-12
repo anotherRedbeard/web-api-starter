@@ -8,6 +8,9 @@ namespace Services
     public interface ICustomerService
     {
         ValueTask<Customer> GetById(int id);
+        ValueTask<Customer> CreateCustomer(Customer customer);
+        ValueTask<Customer> UpdateCustomer(Customer customer, int id);
+        ValueTask<Customer> DeleteCustomer(int id);
         Task<IEnumerable<Customer>> GetByName(string name);
         Task<PaginationWithResult<Customer>> GetAll(UrlQuery urlQuery);
     }

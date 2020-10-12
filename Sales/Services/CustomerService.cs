@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
 using Microsoft.Extensions.Configuration;
@@ -33,7 +34,7 @@ namespace Services
         /// <returns>customers properly paged if requested, or all if not requested</returns>
         public async Task<PaginationWithResult<Customer>> GetAll(UrlQuery urlQuery)
         {
-            string query = _commandText.GetCustomers;
+            string query = _commandText.GetCustomers.QueryText;
             IEnumerable<Customer> customers = null;
             Pagination pagination = null;
             int? totalRecords = null;
@@ -88,7 +89,9 @@ namespace Services
         public async ValueTask<Customer> GetById(int id)
         {
             return await WithConnection(async c => {
-                var result = await c.QueryFirstOrDefaultAsync<Customer>(_commandText.GetCustomersById,new {CustomerId = id});
+                string query = _commandText.GetCustomersById.QueryText;
+                DynamicParameters dbParams = _commandText.GetCustomersById.Parameters(id);
+                var result = await c.QueryFirstOrDefaultAsync<Customer>(query,dbParams);
                 return result;
             });
         }
@@ -101,7 +104,60 @@ namespace Services
         public async Task<IEnumerable<Customer>> GetByName(string name)
         {
             return await WithConnection(async c => {
-                var result = await c.QueryAsync<Customer>(_commandText.GetCustomersByName,new {name = name});
+                string query = _commandText.GetCustomersByName.QueryText;
+                DynamicParameters dbParams = _commandText.GetCustomersByName.Parameters(name);
+                var result = await c.QueryAsync<Customer>(query,dbParams);
+
+                return result;
+            });
+        }
+
+        /// <summary>
+        /// Create customer
+        /// </summary>
+        /// <param name="customer">new customer you would like to create</param>
+        /// <returns>newly created customer</returns>
+        public async ValueTask<Customer> CreateCustomer(Customer customer)
+        {
+            return await WithConnection(async c => {
+                string query = _commandText.CreateCustomer.QueryText;
+                DynamicParameters dbParams = _commandText.CreateCustomer.Parameters(customer);
+                var result = await c.QueryFirstOrDefaultAsync<Customer>(query, dbParams);
+
+                return result;
+            });
+        }
+
+        /// <summary>
+        /// Update customer
+        /// </summary>
+        /// <param name="customer">new customer values you want to update to</param>
+        /// <param name="id">customerId of the customer you want to update</param>
+        /// <returns>newly updated customer</returns>
+        public async ValueTask<Customer> UpdateCustomer(Customer customer, int id)
+        {
+            return await WithConnection(async c => {
+                string query = _commandText.UpdateCustomer.QueryText;
+                DynamicParameters dbParams = _commandText.UpdateCustomer.Parameters(customer,id);
+                var result = await c.QueryFirstOrDefaultAsync<Customer>(query,dbParams);
+
+                return result;
+            });
+        }
+
+        /// <summary>
+        /// delete customer
+        /// </summary>
+        /// <param name="id">id of the customer you want to delete</param>
+        /// <returns>deleted customer</returns>
+        public async ValueTask<Customer> DeleteCustomer(int id)
+        {
+            return await WithConnection(async c => {
+                string query = _commandText.DeleteCustomer.QueryText;
+                DynamicParameters dbParams = _commandText.DeleteCustomer.Parameters(id);
+
+                var result = await c.QueryFirstOrDefaultAsync<Customer>(query, dbParams);
+
                 return result;
             });
         }
