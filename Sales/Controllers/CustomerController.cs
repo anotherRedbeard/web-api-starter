@@ -5,6 +5,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Identity.Web.Resource;
 using Models;
 using Newtonsoft.Json;
 using Services;
@@ -22,6 +23,9 @@ namespace Controllers
     public class CustomerController : ControllerBase
     {
         private readonly ICustomerService _customerService;
+        static readonly string viewCustomersScope = "Customer.View";
+        static readonly string updateCustomersScope = "Customer.Update";
+        static readonly string deleteCustomersScope = "Customer.Delete";
 
         /// <summary>
         /// Customer controller constructor
@@ -39,6 +43,7 @@ namespace Controllers
         [HttpGet]
         public async Task<IActionResult> ListAllCustomers([FromQuery] UrlQuery urlQuery)
         {
+            HttpContext.VerifyUserHasAnyAcceptedScope(viewCustomersScope);
             try
             {
                 var result = await _customerService.GetAll(urlQuery);
@@ -69,6 +74,7 @@ namespace Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetCustomerById(int id)
         {
+            HttpContext.VerifyUserHasAnyAcceptedScope(viewCustomersScope);
             var result = await _customerService.GetById(id);
 
             if (result == null || result.CustomerId < 1)
@@ -86,6 +92,7 @@ namespace Controllers
         [HttpGet("name/{name}")]
         public async Task<IActionResult> ListCustomerByName(string name)
         {
+            HttpContext.VerifyUserHasAnyAcceptedScope(viewCustomersScope);
             var result = await _customerService.GetByName(name);
             return Ok(result);
         }
@@ -98,6 +105,7 @@ namespace Controllers
         [HttpPost]
         public async Task<IActionResult> CreateCustomer(Customer customer)
         {
+            HttpContext.VerifyUserHasAnyAcceptedScope(updateCustomersScope);
             var result = await _customerService.CreateCustomer(customer);
             if (result != null && result.CustomerId >= 1)
             {
@@ -116,6 +124,7 @@ namespace Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateCustomer(Customer customer, int id)
         {
+            HttpContext.VerifyUserHasAnyAcceptedScope(updateCustomersScope);
             //check to see if it exists, return NotFound
             var result = await _customerService.GetById(id);
             if (result == null || result.CustomerId < 1)
@@ -135,6 +144,7 @@ namespace Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCustomer(int id)
         {
+            HttpContext.VerifyUserHasAnyAcceptedScope(deleteCustomersScope);
             //check to see if it exists, return NotFound
             var result = await _customerService.GetById(id);
             if (result == null || result.CustomerId < 1)
