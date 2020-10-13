@@ -99,6 +99,22 @@
                         {
                             "name": "WEBSITE_RUN_FROM_PACKAGE",
                             "value": "1"
+                        },
+                        {
+                            "name": "AzureAd:Instance",
+                            "value": "https://login.microsoftonline.com/"
+                        },
+                        {
+                            "name": "AzureAd:TenantId",
+                            "value": "[concat('@Microsoft.KeyVault(SecretUri=https://',parameters('enterprise_key_vault_name'),'.vault.azure.net/secrets/ad-tenant-id)')]"
+                        },
+                        {
+                            "name": "AzureAd:Domain",
+                            "value": "[concat('@Microsoft.KeyVault(SecretUri=https://',parameters('enterprise_key_vault_name'),'.vault.azure.net/secrets/ad-domain)')]"
+                        },
+                        {
+                            "name": "AzureAd:ClientId",
+                            "value": "[concat('@Microsoft.KeyVault(SecretUri=https://',parameters('enterprise_key_vault_name'),'.vault.azure.net/secrets/sales-api-client-id)')]"
                         }
                     ],
                     "connectionStrings": [
