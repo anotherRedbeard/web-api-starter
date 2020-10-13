@@ -15,6 +15,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Services;
 using Services.Queries;
+using Microsoft.Identity.Web;
 
 //Apply default conventions at the assembly level, this is to help the Swagger doc be more useful
 [assembly: ApiConventionType(typeof(DefaultApiConventions))]
@@ -33,6 +34,7 @@ namespace Sales
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddMicrosoftIdentityWebApiAuthentication(Configuration);
             services.AddScoped<ICommandText,CommandText>();
             services.AddScoped<ICustomerService,CustomerService>();
             services.AddControllers();
@@ -72,6 +74,10 @@ namespace Sales
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            //configure auth
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             // Enable middleware to serve generated Swagger as a JSON endpoint.
             app.UseSwagger();

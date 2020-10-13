@@ -12,6 +12,7 @@
     <PackageReference Include="dapper" Version="2.0.35" />
     <PackageReference Include="microsoft.azure.services.appauthentication" Version="1.6.0" />
     <PackageReference Include="Microsoft.data.sqlclient" Version="2.0.1" />
+    <PackageReference Include="microsoft.identity.web" Version="1.1.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
   </ItemGroup>
 
