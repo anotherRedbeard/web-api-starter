@@ -42,6 +42,7 @@ namespace Sales
             //Register the Swagger generator, defining 1 or more Swagger documents
             services.AddSwaggerGen(c =>
             {
+                c.CustomOperationIds(e => $"{e.ActionDescriptor.RouteValues["action"]}_{e.HttpMethod}");
                 c.SwaggerDoc("v1", new OpenApiInfo
                 {
                     Version = "v1",
