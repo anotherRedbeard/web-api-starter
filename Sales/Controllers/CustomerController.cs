@@ -39,8 +39,13 @@ namespace Controllers
         /// <summary>
         /// Get a list of all customers
         /// </summary>
+        /// <remarks>GetAllCustomers</remarks>
         /// <returns>IEnumerable of all Customers</returns>
+        /// <response code="200">Successful Operation</response>
+        /// <response code="400">Error occurred</response>
         [HttpGet]
+        [ProducesResponseType(typeof(IEnumerable<Customer>),(int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> ListAllCustomers([FromQuery] UrlQuery urlQuery)
         {
             HttpContext.VerifyUserHasAnyAcceptedScope(viewCustomersScope);
@@ -69,9 +74,14 @@ namespace Controllers
         /// <summary>
         /// Get a customer by the customer id
         /// </summary>
+        /// <remarks>GetCustomerById</remarks>
         /// <param name="id">id of the customer you want to get</param>
         /// <returns>customer you are looking for by id</returns>
+        /// <response code="200">Successful Operation</response>
+        /// <response code="404">Customer not found</response>
         [HttpGet("{id}")]
+        [ProducesResponseType(typeof(Customer),(int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> GetCustomerById(int id)
         {
             HttpContext.VerifyUserHasAnyAcceptedScope(viewCustomersScope);
@@ -87,9 +97,12 @@ namespace Controllers
         /// <summary>
         /// Get a list of customers filtered by name
         /// </summary>
+        /// <remarks>GetCustomersByName</remarks>
         /// <param name="name">full or partial name to filter the customer on</param>
         /// <returns>List of customers that are filtered by incomming name</returns>
+        /// <response code="200">Successful Operation</response>
         [HttpGet("name/{name}")]
+        [ProducesResponseType(typeof(IEnumerable<Customer>),(int)HttpStatusCode.OK)]
         public async Task<IActionResult> ListCustomerByName(string name)
         {
             HttpContext.VerifyUserHasAnyAcceptedScope(viewCustomersScope);
@@ -100,9 +113,13 @@ namespace Controllers
         /// <summary>
         /// Create a new customer
         /// </summary>
+        /// <remarks>CreateCustomer</remarks>
         /// <param name="customer">new customer to create</param>
         /// <returns>newly created customer</returns>
+        /// <response code="201">Successful Operation</response>
         [HttpPost]
+        [ProducesResponseType(typeof(Customer),201)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> CreateCustomer(Customer customer)
         {
             HttpContext.VerifyUserHasAnyAcceptedScope(updateCustomersScope);
@@ -118,10 +135,15 @@ namespace Controllers
         /// <summary>
         /// Update an existing customer
         /// </summary>
+        /// <remarks>UpdateCustomer</remarks>
         /// <param name="id">customer id of the customer you want to update</param>
         /// <param name="customer">customer information you want to update customer with</param>
         /// <returns>newly updated customer</returns>
+        /// <response code="200">Successful Operation</response>
+        /// <response code="404">Customer not found</response>
         [HttpPut("{id}")]
+        [ProducesResponseType(typeof(Customer),(int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> UpdateCustomer(Customer customer, int id)
         {
             HttpContext.VerifyUserHasAnyAcceptedScope(updateCustomersScope);
@@ -139,9 +161,14 @@ namespace Controllers
         /// <summary>
         /// Delete an existing customer
         /// </summary>
+        /// <remarks>DeleteCustomer</remarks>
         /// <param name="id">customer id of the customer you want to update</param>
         /// <returns>customer that was just deleted</returns>
+        /// <response code="200">Successful Operation</response>
+        /// <response code="404">Customer not found</response>
         [HttpDelete("{id}")]
+        [ProducesResponseType(typeof(Customer),(int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> DeleteCustomer(int id)
         {
             HttpContext.VerifyUserHasAnyAcceptedScope(deleteCustomersScope);

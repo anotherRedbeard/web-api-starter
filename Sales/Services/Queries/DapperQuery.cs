@@ -3,6 +3,7 @@ using Dapper;
 
 namespace Services.Queries
 {
+#pragma warning disable CS1591
     public class DapperQuery
     {
         public string QueryText { get; set; }
@@ -18,4 +19,5 @@ namespace Services.Queries
         public string QueryText { get; set; }
         public Func<T,U,DynamicParameters> Parameters;
     }
+#pragma warning disable CS1591
 }
